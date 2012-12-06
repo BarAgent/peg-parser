@@ -53,25 +53,25 @@ define macro parser-method-definer
    //
    // These are alternate forms for different value list styles.
    //
-   
+
    { define parser-method ?:name (?params:*) => (?results:*) ; ?rest:* end }
       => { define parser-method ?name (?params) => (?results) ?rest end }
    { define parser-method ?:name (?params:*) => ?result:variable ; ?rest:* end }
       => { define parser-method ?name (?params) => (?result) ?rest end }
-   
+
    //
    // These are alternate forms for defaulted value lists.
    //
-   
+
    { define parser-method ?:name (?params:*) => (?r1:variable) ?rest:* end }
       => { define parser-method ?name (?params) => (?r1, r2, r3) ?rest end }
    { define parser-method ?:name (?params:*) => (?r1:variable, ?r2:variable) ?rest:* end }
       => { define parser-method ?name (?params) => (?r1, ?r2, r3) ?rest end }
-   
+
    //
    // This is the main form.
    //
-   
+
    {  define parser-method ?token-name:name
          (?stream:name, ?context-name:name :: ?context-type:expression)
       => (?res:name :: ?res-type:expression, ?succ:name :: ?succ-type:expression,
@@ -86,7 +86,7 @@ define macro parser-method-definer
          indent-trace();
          format-trace("%s...", ?"token-name");
          let pos = ?stream.stream-position;
-         let (?res :: ?res-type, ?succ :: <boolean>, ?ext :: false-or(<parse-extent>)) = 
+         let (?res :: ?res-type, ?succ :: <boolean>, ?ext :: false-or(<parse-extent>)) =
                ?body;
 
          // Default the values returned by ?body.
@@ -314,7 +314,7 @@ define macro parser-definer
 
    // The specific parser builder macros are called with property lists that
    // can include the following symbols and values.
-   // 
+   //
    // All styles
    //    Either         parser-type:   cached
    //       or          parser-type:   uncached
@@ -354,11 +354,11 @@ define macro parser-definer
    // Yield style
    //    One            yield-expr:    (expression)
 
-   
+
    //
    // These forms create parsers that return an initialized <token> class.
    //
-   
+
    {  define ?parser-type parser ?token-name:name (?supers)
          rule ?rule => ?rule-product:variable;
          ?context-and-slots-clauses
@@ -370,7 +370,7 @@ define macro parser-definer
          ?context-and-slots-clauses
       end
    }
-   
+
    {  define ?parser-type parser ?token-name:name (?supers)
          label ?label:expression;
          rule ?rule => ?rule-product:variable;
@@ -383,11 +383,11 @@ define macro parser-definer
          ?context-and-slots-clauses
       end
    }
-   
+
    //
    // These forms create parsers that return the result of an expression.
    //
-   
+
    {  define ?parser-type parser ?token-name:name :: ?token-type:expression
          rule ?rule => ?rule-product:variable;
          ?context-and-yield-clauses
@@ -414,7 +414,7 @@ define macro parser-definer
    //
    // These forms create parsers that return a symbol.
    //
-   
+
    {  define ?parser-type parser ?token-name:name
          rule ?rule;
          ?body-clauses
@@ -442,12 +442,12 @@ define macro parser-definer
 parser-type:
    { caching } => { parser-type: cached }
    { } => { parser-type: uncached }
-   
+
 // Optional superclasses.
 supers:
    { ?:name, ... } => { super: ?name, ... }
    { } => { }
-   
+
 // Optional label.
 label:
    { ?:expression } => { label: ?expression }
@@ -488,7 +488,7 @@ context-and-slots-clauses:
    { ?class-slots-and-clauses }
       => { context-name: omitted, context-type: <parse-context>,
            ?class-slots-and-clauses }
-   
+
 context-and-yield-clauses:
    {  parse-context => ?context-var:variable;
       yield ?yield-expr:expression;
@@ -496,7 +496,7 @@ context-and-yield-clauses:
    } => {
       ?context-var, ?yield-expr, ?body-clauses
    }
-   
+
    {  yield ?yield-expr:expression;
       ?body-clauses
    } => {
@@ -520,7 +520,7 @@ class-slots-and-clauses:
    { inherited slot ?:name = ?:expression; ... }
       => { slot: inherited ?name = ?expression, ... }
    { ?body-clauses } => { ?body-clauses }
-   
+
 body-clauses:
    { ?attributes-clause } => { ?attributes-clause }
 
@@ -573,13 +573,13 @@ define macro class-style-parser
    } => {
       // Define the class.
       class-specifier ?clauses end;
-      
+
       // Initialize the class's slots based on results of rule.
       initialize-specifier ?clauses end;
 
       // Define the parser rule by evaluating all the 'seq' etc. functions.
       define constant ?token-name ## "-parser-rule" = ?rule;
-      
+
       // Define the parser value as a <token> subclass, slots initialized by
       // 'initialize' function above.
       define inline function ?token-name ## "-parser-value"
@@ -590,10 +590,10 @@ define macro class-style-parser
          make(?token-type, start: start-pos, end: end-pos,
               ?context-name: ?context-name, ?product-name: ?product-name)
       end function;
-      
+
       // Define the parser function including tracing and rollback.
       parser-function ?parser-type, ?clauses end;
-      
+
       // User defined action functions
       after-function ?clauses end;
       cleanup-function ?clauses end;
@@ -613,7 +613,7 @@ define macro yield-style-parser
    } => {
       // Define the parser rule by evaluating all the 'seq' etc. functions.
       define constant ?token-name ## "-parser-rule" = ?rule;
-      
+
       // Define the parser value as the result of the yield expression.
       define function ?token-name ## "-parser-value"
          (?context-name :: ?context-type, ?product-name :: ?product-type,
@@ -621,10 +621,10 @@ define macro yield-style-parser
       => (value :: ?token-type)
          ?yield-expr;
       end function;
-      
+
       // Define the parser function including tracing and rollback.
       parser-function ?parser-type, ?clauses end;
-      
+
       // User defined action functions
       after-function ?clauses end;
       cleanup-function ?clauses end;
@@ -642,17 +642,17 @@ define macro symbol-style-parser
    } => {
       // Define the parser rule by evaluating all the 'seq' etc. functions.
       define constant ?token-name ## "-parser-rule" = ?rule;
-      
+
       // Define the parser value as a symbol, same as token name.
       define inline function ?token-name ## "-parser-value"
          (context, product, start-pos, end-pos)
       => (value :: <symbol>)
          ?#"token-name"
       end function;
-      
+
       // Define the parser function including tracing and rollback.
       parser-function ?parser-type, ?clauses end;
-      
+
       // User defined action functions
       after-function ?clauses end;
       cleanup-function ?clauses end;
